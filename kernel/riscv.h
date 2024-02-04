@@ -361,3 +361,6 @@ typedef uint64 *pagetable_t; // 512 PTEs
 // Sv39, to avoid having to sign-extend virtual addresses
 // that have the high bit set.
 #define MAXVA (1L << (9 + 9 + 9 + 12 - 1))
+
+// max pagetable level index (from 0 up to MAXPTLEVEL) 
+#define MAXPTLEVEL 2 // 0, 1, 2

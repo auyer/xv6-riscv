@@ -88,7 +88,7 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
   if(va >= MAXVA)
     panic("walk");
 
-  for(int level = 2; level > 0; level--) {
+  for(int level = MAXPTLEVEL; level > 0; level--) {
     pte_t *pte = &pagetable[PX(level, va)];
     if(*pte & PTE_V) {
       pagetable = (pagetable_t)PTE2PA(*pte);
@@ -294,7 +294,7 @@ void _vmprint_recursive(pagetable_t pagetable, int level) {
       // this uses the fmt directive %.*s that I implemented in this printf function
       printf("%.*s%d: pte %p pa %p\n", ((level+1)*2+level), ".. .. ..", i, pte, PTE2PA(pte));
       // if not in the last page, then we can go deeper
-      if (level <2){
+      if (level < MAXPTLEVEL){
         _vmprint_recursive((pagetable_t)PTE2PA(pte), level+1);
       }
     }
