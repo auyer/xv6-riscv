@@ -286,6 +286,31 @@ freewalk(pagetable_t pagetable)
   kfree((void*)pagetable);
 }
 
+void _vmprint_recursive(pagetable_t pagetable, int level) {
+  for (int i = 0; i < 512; i++) {
+    pte_t pte = pagetable[i];
+    if (pte & PTE_V) {
+      // (level+1)*2+level) is a progression that goes 0->2, 1->5, 2->8 for printing the prefix
+      // this uses the fmt directive %.*s that I implemented in this printf function
+      printf("%.*s%d: pte %p pa %p\n", ((level+1)*2+level), ".. .. ..", i, pte, PTE2PA(pte));
+      // if not in the last page, then we can go deeper
+      if (level <2){
+        _vmprint_recursive((pagetable_t)PTE2PA(pte), level+1);
+      }
+    }
+  }
+}
+
+void vmprint(pagetable_t pagetable) {
+
+  printf("page table %p\n", pagetable);
+  int level = 0;
+
+  _vmprint_recursive(pagetable, level);
+ 
+}
+
+
 // Free user memory pages,
 // then free page-table pages.
 void
