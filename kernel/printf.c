@@ -59,7 +59,7 @@ printptr(uint64 x)
     consputc(digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
 
-// Print to the console. only understands %d, %x, %p, %s.
+// Print to the console. only understands %d, %x, %p, %s, %.*s.
 void
 printf(char *fmt, ...)
 {
@@ -99,6 +99,32 @@ printf(char *fmt, ...)
       for(; *s; s++)
         consputc(*s);
       break;
+    case '.':
+      // checks for a "%.*s" format. 
+      // if found, it prints the a string up to the length 
+      // specified by the argument to the left of the string.
+      c = fmt[i+1] & 0xff;
+      if (c == '*'){
+        c = fmt[i+2] & 0xff;
+        if (c == 's') {
+          // skip the 2 characters that this path read by looking ahead
+          i+=2;
+          // reuse c variable for string multiplication 
+          c = va_arg(ap, int);
+          if((s = va_arg(ap, char*)) == 0)
+            s = "(null)";
+          for(; *s; s++){
+            c--;
+            if (c >= 0){ 
+              consputc(*s);
+            }
+          }
+        }
+        break;
+      } else{
+        consputc('.');
+      }
+      break; 
     case '%':
       consputc('%');
       break;
